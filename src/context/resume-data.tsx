@@ -4,6 +4,7 @@ import {
   getResumeById,
   saveCurrentResume,
 } from "@/service/global";
+import { stripIds } from "@/utils/helpers";
 import { useUser } from "@clerk/clerk-react";
 import React, { createContext, useEffect, useReducer } from "react";
 import { toast } from "sonner";
@@ -325,17 +326,20 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_ERROR", payload: null });
+
       const payload = {
-        personalInfo: state.currentResume.personalInfo,
-        experience: state.currentResume.experience,
-        education: state.currentResume.education,
-        skills: state.currentResume.skills,
+        personalInfo: stripIds(state.currentResume.personalInfo),
+        experience: stripIds(state.currentResume.experience),
+        education: stripIds(state.currentResume.education),
+        skills: stripIds(state.currentResume.skills),
       };
+
       console.log("Saving current resume:", payload);
+
       await saveCurrentResume(state.currentResume.documentId, payload);
       toast("Resume updated successfully!");
       await loadAllResumes();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating resume:", error);
       dispatch({ type: "SET_ERROR", payload: "Failed to update resume." });
       toast(error.message || "Failed to update resume");

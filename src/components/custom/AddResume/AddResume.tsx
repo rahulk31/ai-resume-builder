@@ -7,38 +7,21 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { createNewResume, getResumeById } from "./../../../../service/global";
+import { useResume } from "@/hooks/useResume";
 import { Loader2, PlusCircleIcon } from "lucide-react";
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import { useUser } from "@clerk/clerk-react";
+import { useNavigate } from "react-router";
 
 export const AddResume = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [resumeTitle, setResumeTitle] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user } = useUser();
+  const { actions } = useResume();
+  const navigate = useNavigate();
 
   const onCreateResume = async () => {
-    setLoading(true);
-    const uuid = uuidv4();
-
-    const data = {
-      resumeId: uuid,
-      title: resumeTitle,
-      name: user?.fullName || null,
-      email: user?.emailAddresses[0]?.emailAddress || null,
-    };
-
-    try {
-      await createNewResume(data);
-      console.log("Resume created successfully");
-    } finally {
-      setLoading(false);
-      setOpenDialog(false);
-      const data = await getResumeById(uuid);
-      console.log("Fetched resume data:", data);
-    }
+    actions.createNewResume();
+    navigate(`/dashboard/resume/${resumeTitle}/edit`);
   };
 
   return (

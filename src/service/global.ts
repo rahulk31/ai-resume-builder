@@ -11,7 +11,7 @@ const axiosClient = axios.create({
   },
 });
 
-const createNewResume = async (data: ResumeUser) => {
+const createNewResumeService = async (data: ResumeUser) => {
   console.log("Creating resume with data:", data);
   try {
     const response = await axiosClient.post("/resume-users", {
@@ -20,6 +20,20 @@ const createNewResume = async (data: ResumeUser) => {
     return response.data;
   } catch (error) {
     console.error("Error creating resume:", error);
+    throw error;
+  }
+};
+const saveCurrentResume = async (
+  documentId: string | undefined,
+  data: ResumeUser
+) => {
+  try {
+    const response = await axiosClient.put(`/resume-users/${documentId}`, {
+      data,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating resume:", error);
     throw error;
   }
 };
@@ -40,12 +54,20 @@ const getAllResumes = async (email: string | undefined) => {
 const getResumeById = async (resumeId: string | undefined) => {
   console.log("Fetching resume with ID:", resumeId);
   try {
-    const response = await axiosClient.get(`/resume-users/${resumeId}`);
-    return response.data;
+    const response = await axiosClient.get(
+      `/resume-users/${resumeId}?populate=*`
+    );
+    console.log("SERVICE: resume data:", response.data);
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching resume:", error);
     throw error;
   }
 };
 
-export { createNewResume, getAllResumes, getResumeById };
+export {
+  createNewResumeService,
+  getAllResumes,
+  getResumeById,
+  saveCurrentResume,
+};

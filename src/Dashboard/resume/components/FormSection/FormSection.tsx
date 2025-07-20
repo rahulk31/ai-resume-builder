@@ -2,47 +2,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ResumeDataContext } from "@/context/resume-data";
-import React from "react";
 import { ModalAISummary } from "./ModalAISummary";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Trash2 } from "lucide-react";
-// import { Checkbox } from "@/components/ui/checkbox";
+import { useResume } from "@/hooks/useResume";
+import { useState } from "react";
 
 export const FormSection = () => {
-  const { resumeData, setResumeData } = React.useContext(ResumeDataContext);
+  const { state, actions } = useResume();
+  const { currentResume } = state;
+  const [currentSkill, setCurrentSkill] = useState("");
 
-  const updatePersonalInfo = (field: string, value: string) => {
-    setResumeData((prev) => ({
-      ...prev,
-      personalInfo: {
-        ...prev.personalInfo,
-        [field]: value,
-      },
-    }));
+  const addSkill = () => {
+    if (currentSkill.trim() === "") return;
+    actions.addSkill({ name: currentSkill, rating: 0 });
+    setCurrentSkill("");
   };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold text-foreground mb-2">Resume Builder</h1>
-      <p className="text-sm text-muted-foreground mb-6">
-        This is where you can edit your resume details.
-      </p>
-
       {/* Personal Details */}
       <Card>
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 placeholder="John Doe"
-                value={resumeData.personalInfo?.name || ""}
-                onChange={(e) => updatePersonalInfo("name", e.target.value)}
+                value={currentResume.personalInfo?.name || ""}
+                onChange={(e) =>
+                  actions.updatePersonalInfo("name", e.target.value)
+                }
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -50,21 +44,25 @@ export const FormSection = () => {
               <Input
                 id="email"
                 type="email"
-                value={resumeData.personalInfo?.email || ""}
+                value={currentResume.personalInfo?.email || ""}
                 placeholder="john@example.com"
-                onChange={(e) => updatePersonalInfo("email", e.target.value)}
+                onChange={(e) =>
+                  actions.updatePersonalInfo("email", e.target.value)
+                }
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
                 type="tel"
-                value={resumeData.personalInfo?.phone || ""}
+                value={currentResume.personalInfo?.phone || ""}
                 placeholder="+1 (555) 123-4567"
-                onChange={(e) => updatePersonalInfo("phone", e.target.value)}
+                onChange={(e) =>
+                  actions.updatePersonalInfo("phone", e.target.value)
+                }
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -72,9 +70,11 @@ export const FormSection = () => {
               <Input
                 id="location"
                 type="text"
-                value={resumeData.personalInfo?.location || ""}
+                value={currentResume.personalInfo?.location || ""}
                 placeholder="Bengaluru, India"
-                onChange={(e) => updatePersonalInfo("location", e.target.value)}
+                onChange={(e) =>
+                  actions.updatePersonalInfo("location", e.target.value)
+                }
               />
             </div>
           </div>
@@ -84,10 +84,12 @@ export const FormSection = () => {
             </Label>
             <Textarea
               id="summary"
-              value={resumeData.personalInfo?.summary || ""}
+              value={currentResume.personalInfo?.summary || ""}
               placeholder="A brief summary of your professional background"
               className="h-24"
-              onChange={(e) => updatePersonalInfo("summary", e.target.value)}
+              onChange={(e) =>
+                actions.updatePersonalInfo("summary", e.target.value)
+              }
             />
             <ModalAISummary />
           </div>
@@ -98,36 +100,36 @@ export const FormSection = () => {
       <Card>
         <CardHeader className="flex justify-between items-center">
           <CardTitle>Work Experience</CardTitle>
-          <Button>
+          <Button onClick={actions.addExperience}>
             <PlusCircle /> Add Experience
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          {resumeData.experience?.map((exp, index) => (
+          {currentResume.experience?.map((exp, index) => (
             <div
               key={index}
               className="border border-border rounded-lg p-4 space-y-3"
             >
-              <div className="grid grid-cols-2 gap-3 flex-1">
-                <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                <div className="col-span-2 md:col-span-1">
                   <Label htmlFor={`jobTitle-${index}`} className="mb-1">
                     Job Title
                   </Label>
                   <Input
                     id={`jobTitle-${index}`}
                     type="text"
-                    value={exp.title || ""}
+                    value={exp.jobTitle || ""}
                     placeholder="eg. Software Engineer"
                     onChange={(e) =>
-                      setResumeData((prev) => {
-                        const newExperience = [...prev.experience];
-                        newExperience[index].title = e.target.value;
-                        return { ...prev, experience: newExperience };
-                      })
+                      actions.updateExperience(
+                        exp.id,
+                        "jobTitle",
+                        e.target.value
+                      )
                     }
                   />
                 </div>
-                <div>
+                <div className="col-span-2 md:col-span-1">
                   <Label htmlFor={`companyName-${index}`} className="mb-1">
                     Company Name
                   </Label>
@@ -137,16 +139,16 @@ export const FormSection = () => {
                     value={exp.companyName || ""}
                     placeholder="eg. Google"
                     onChange={(e) =>
-                      setResumeData((prev) => {
-                        const newExperience = [...prev.experience];
-                        newExperience[index].companyName = e.target.value;
-                        return { ...prev, experience: newExperience };
-                      })
+                      actions.updateExperience(
+                        exp.id,
+                        "companyName",
+                        e.target.value
+                      )
                     }
                   />
                 </div>
 
-                <div>
+                <div className="col-span-1">
                   <Label htmlFor={`startDate-${index}`} className="mb-1">
                     Start Date
                   </Label>
@@ -156,28 +158,19 @@ export const FormSection = () => {
                     value={exp.startDate || ""}
                     placeholder="eg. Jan 2021"
                     onChange={(e) =>
-                      setResumeData((prev) => {
-                        const newExperience = [...prev.experience];
-                        newExperience[index].startDate = e.target.value;
-                        return { ...prev, experience: newExperience };
-                      })
+                      actions.updateExperience(
+                        exp.id,
+                        "startDate",
+                        e.target.value
+                      )
                     }
                   />
                 </div>
-                <div>
+                <div className="col-span-1">
                   <div className="flex items-center justify-between gap-2">
                     <Label htmlFor={`endDate-${index}`} className="mb-1">
                       End Date
                     </Label>
-                    {/* <div className="flex items-center mb-1">
-                      <Checkbox />
-                      <Label
-                        htmlFor={`currentlyWorking-${index}`}
-                        className="ml-2"
-                      >
-                        Currently Working
-                      </Label>
-                    </div> */}
                   </div>
                   <Input
                     id={`endDate-${index}`}
@@ -185,11 +178,11 @@ export const FormSection = () => {
                     value={exp.endDate || ""}
                     placeholder="eg. Present or Jan 2022"
                     onChange={(e) =>
-                      setResumeData((prev) => {
-                        const newExperience = [...prev.experience];
-                        newExperience[index].endDate = e.target.value;
-                        return { ...prev, experience: newExperience };
-                      })
+                      actions.updateExperience(
+                        exp.id,
+                        "endDate",
+                        e.target.value
+                      )
                     }
                   />
                 </div>
@@ -203,11 +196,11 @@ export const FormSection = () => {
                     value={exp.workLocation || ""}
                     placeholder="eg. New York/ Remote"
                     onChange={(e) =>
-                      setResumeData((prev) => {
-                        const newExperience = [...prev.experience];
-                        newExperience[index].workLocation = e.target.value;
-                        return { ...prev, experience: newExperience };
-                      })
+                      actions.updateExperience(
+                        exp.id,
+                        "workLocation",
+                        e.target.value
+                      )
                     }
                   />
                 </div>
@@ -221,20 +214,154 @@ export const FormSection = () => {
                     value={exp.description || ""}
                     placeholder="Describe your role and achievements"
                     onChange={(e) =>
-                      setResumeData((prev) => {
-                        const newExperience = [...prev.experience];
-                        newExperience[index].description = e.target.value;
-                        return { ...prev, experience: newExperience };
-                      })
+                      actions.updateExperience(
+                        exp.id,
+                        "description",
+                        e.target.value
+                      )
                     }
                   />
                 </div>
               </div>
-              <Button variant="secondary">
+              <Button
+                variant="secondary"
+                onClick={() => actions.removeExperience(exp.id)}
+              >
                 Remove <Trash2 />
               </Button>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      {/* Education  */}
+      <Card>
+        <CardHeader className="flex justify-between items-center">
+          <CardTitle>Education</CardTitle>
+          <Button onClick={actions.addEducation}>
+            <PlusCircle /> Add Education
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {currentResume.education?.map((edu, index) => (
+            <div
+              key={index}
+              className="border border-border rounded-lg p-4 space-y-3"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
+                <div>
+                  <Label htmlFor={`degree-${index}`} className="mb-1">
+                    Degree
+                  </Label>
+                  <Input
+                    id={`degree-${index}`}
+                    type="text"
+                    value={edu.degree || ""}
+                    placeholder="eg. B.Tech (CSE)"
+                    onChange={(e) =>
+                      actions.updateEducation(edu.id, "degree", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`school-${index}`} className="mb-1">
+                    School/ University
+                  </Label>
+                  <Input
+                    id={`school-${index}`}
+                    type="text"
+                    value={edu.school || ""}
+                    placeholder="eg. IIT Delhi"
+                    onChange={(e) =>
+                      actions.updateEducation(edu.id, "school", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor={`startDate-${index}`} className="mb-1">
+                    Start Date
+                  </Label>
+                  <Input
+                    id={`startDate-${index}`}
+                    type="text"
+                    value={edu.startDate || ""}
+                    placeholder="eg. Jan 2021"
+                    onChange={(e) =>
+                      actions.updateEducation(
+                        edu.id,
+                        "startDate",
+                        e.target.value
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <div className="flex items-center justify-between gap-2">
+                    <Label htmlFor={`endDate-${index}`} className="mb-1">
+                      End Date
+                    </Label>
+                  </div>
+                  <Input
+                    id={`endDate-${index}`}
+                    type="text"
+                    value={edu.endDate || ""}
+                    placeholder="eg. Present or Jan 2022"
+                    onChange={(e) =>
+                      actions.updateEducation(edu.id, "endDate", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+              <Button
+                variant="secondary"
+                onClick={() => actions.removeEducation(edu.id)}
+              >
+                Remove <Trash2 />
+              </Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      {/* Skills */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Skills</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add a skill..."
+              value={currentSkill}
+              onChange={(e) => setCurrentSkill(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addSkill();
+                }
+              }}
+            />
+            <Button onClick={addSkill}>
+              <PlusCircle /> Add Skill
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {currentResume.skills.map((skill, index) => (
+              <div
+                key={index}
+                className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm flex items-center gap-1"
+              >
+                {skill.name}
+                <button
+                  onClick={() => actions.removeSkill(index)}
+                  className="hover:text-destructive"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>

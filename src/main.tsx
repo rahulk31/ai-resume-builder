@@ -9,6 +9,7 @@ import { Dashboard } from "./Dashboard";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { SignInPage } from "./auth";
 import { EditResume } from "./Dashboard/resume/[resumeId]/edit/EditResume.tsx";
+import { ResumeProvider } from "./context/resume-data.tsx";
 
 const router = createBrowserRouter([
   {
@@ -46,7 +47,9 @@ if (!PUBLISHABLE_KEY) {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl={"/"}>
-      <RouterProvider router={router} />
+      <ResumeProvider>
+        <RouterProvider router={router} />
+      </ResumeProvider>
     </ClerkProvider>
   </StrictMode>
 );

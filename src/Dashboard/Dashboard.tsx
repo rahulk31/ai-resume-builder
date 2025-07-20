@@ -1,32 +1,14 @@
 import { AddResume } from "@/components/custom/AddResume";
-import { useUser } from "@clerk/clerk-react";
-import { useEffect, useState } from "react";
-import { getAllResumes } from "../../service/global";
 import { useNavigate } from "react-router";
+import { useResume } from "@/hooks/useResume";
 
 export const Dashboard = () => {
-  const { user } = useUser();
-  const [resumeList, setResumeList] = useState([]);
+  const {
+    state: { savedResumes },
+  } = useResume();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchResumes = async () => {
-      try {
-        const data = await getAllResumes(
-          user?.primaryEmailAddress?.emailAddress
-        );
-        setResumeList(data.data || []);
-      } catch (error) {
-        console.error("Error fetching resumes:", error);
-      }
-    };
-
-    if (user) {
-      fetchResumes();
-    }
-  }, [user]);
-
-  console.log("Resume List:", resumeList);
+  console.log("Resume List:", savedResumes);
 
   return (
     <div className="p-10 md:px-20 lg:px-32">
@@ -34,8 +16,8 @@ export const Dashboard = () => {
       <p>Start creating your resume and polish with the help of AI.</p>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 py-5 gap-2">
         <AddResume />
-        {resumeList.length > 0 &&
-          resumeList.map((resume: any) => (
+        {savedResumes.length > 0 &&
+          savedResumes.map((resume: any) => (
             <div
               key={resume.id}
               className="p-14 py-24 border items-center flex justify-center rounded-lg bg-secondary h-[280px] hover:scale-101 transition-all hover:shadow-md cursor-pointer"

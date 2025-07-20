@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ResumeDataContext } from "@/context/resume-data";
+import { useResume } from "@/hooks/useResume";
 import { Download } from "lucide-react";
-import React from "react";
 
 export const ResumePreview = () => {
-  const { resumeData } = React.useContext(ResumeDataContext);
-  console.log("Resume Data:", resumeData);
+  const {
+    state: { currentResume },
+  } = useResume();
+  console.log("PREVIEW: Resume Data:", currentResume);
   return (
     <div className="sticky top-6">
       <Card className="h-fit">
@@ -39,50 +40,50 @@ export const ResumePreview = () => {
               {/* Header */}
               <div className="text-center mb-6">
                 <h1 className="text-3xl font-bold text-foreground mb-2">
-                  {resumeData?.personalInfo?.name || "Your Name"}
+                  {currentResume?.personalInfo?.name || "Your Name"}
                 </h1>
                 <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-                  {resumeData?.personalInfo?.email && (
-                    <span>{resumeData?.personalInfo?.email}</span>
+                  {currentResume?.personalInfo?.email && (
+                    <span>{currentResume?.personalInfo?.email}</span>
                   )}
-                  {resumeData?.personalInfo?.phone && (
-                    <span>{resumeData?.personalInfo?.phone}</span>
+                  {currentResume?.personalInfo?.phone && (
+                    <span>{currentResume?.personalInfo?.phone}</span>
                   )}
-                  {resumeData?.personalInfo?.location && (
-                    <span>{resumeData?.personalInfo?.location}</span>
+                  {currentResume?.personalInfo?.location && (
+                    <span>{currentResume?.personalInfo?.location}</span>
                   )}
                 </div>
               </div>
 
               {/* Professional Summary */}
-              {resumeData?.personalInfo?.summary && (
+              {currentResume?.personalInfo?.summary && (
                 <div className="mb-6">
                   <h2 className="text-lg font-semibold text-foreground mb-2 border-b border-primary/20 pb-1">
                     Professional Summary
                   </h2>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {resumeData?.personalInfo?.summary}
+                    {currentResume?.personalInfo?.summary}
                   </p>
                 </div>
               )}
 
               {/* Experience */}
-              {resumeData?.experience?.some(
-                (exp) => exp.title || exp.companyName
+              {currentResume?.experience?.some(
+                (exp) => exp.jobTitle || exp.companyName
               ) && (
                 <div className="mb-6">
                   <h2 className="text-lg font-semibold text-foreground mb-3 border-b border-primary/20 pb-1">
                     Work Experience
                   </h2>
                   <div className="space-y-4">
-                    {resumeData?.experience
-                      ?.filter((exp) => exp.title || exp.companyName)
+                    {currentResume?.experience
+                      ?.filter((exp) => exp.jobTitle || exp.companyName)
                       .map((exp) => (
                         <div key={exp.id} className="space-y-1">
                           <div className="flex justify-between items-start">
                             <div>
                               <h3 className="font-semibold text-foreground">
-                                {exp.title || "Job Title"}
+                                {exp.jobTitle || "Job Title"}
                               </h3>
                               <p className="text-sm text-primary font-medium">
                                 {exp.companyName || "Company Name"},{" "}
@@ -111,7 +112,7 @@ export const ResumePreview = () => {
               )}
 
               {/* Education */}
-              {resumeData?.education?.some(
+              {currentResume?.education?.some(
                 (edu) => edu.degree || edu.school
               ) && (
                 <div className="mb-6">
@@ -119,7 +120,7 @@ export const ResumePreview = () => {
                     Education
                   </h2>
                   <div className="space-y-3">
-                    {resumeData?.education
+                    {currentResume?.education
                       ?.filter((edu) => edu.degree || edu.school)
                       .map((edu) => (
                         <div
@@ -146,13 +147,13 @@ export const ResumePreview = () => {
               )}
 
               {/* Skills */}
-              {resumeData?.skills?.length > 0 && (
+              {currentResume?.skills?.length > 0 && (
                 <div className="mb-6">
                   <h2 className="text-lg font-semibold text-foreground mb-3 border-b border-primary/20 pb-1">
                     Skills
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    {resumeData?.skills?.map((skill, index) => (
+                    {currentResume?.skills?.map((skill, index) => (
                       <span
                         key={index}
                         className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium"
@@ -165,15 +166,15 @@ export const ResumePreview = () => {
               )}
 
               {/* Empty State */}
-              {!resumeData?.personalInfo?.name &&
-                !resumeData?.personalInfo?.summary &&
-                !resumeData?.experience?.some(
-                  (exp) => exp.title || exp.companyName
+              {!currentResume?.personalInfo?.name &&
+                !currentResume?.personalInfo?.summary &&
+                !currentResume?.experience?.some(
+                  (exp) => exp.jobTitle || exp.companyName
                 ) &&
-                !resumeData?.education?.some(
+                !currentResume?.education?.some(
                   (edu) => edu.degree || edu.school
                 ) &&
-                resumeData?.skills?.length === 0 && (
+                currentResume?.skills?.length === 0 && (
                   <div className="text-center py-16">
                     <div className="text-muted-foreground">
                       <p className="text-lg mb-2">

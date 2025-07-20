@@ -13,7 +13,7 @@ export const generateSummaryAI = async ({
   experience: string;
   skills: string;
 }) => {
-  const prompt = `Write a resume's profile Summary for a ${role} with ${experience} experience having a skillset of ${skills}. Keep the summary within 150 words to the point no suggestions no crap exact 150 words. Make it look professional in human tone, clear and concise words to convey the message clearly to the recruiter.`;
+  const prompt = `Write a resume's profile Summary for a ${role} with ${experience} experience having a skillset of ${skills}. Keep the summary within 100 words to the point no suggestions no crap exact 100 words. Make it look professional in human tone, clear and concise words to convey the message clearly to the recruiter.`;
   let outputText = "";
   const ai = new GoogleGenAI({
     apiKey: import.meta.env.VITE_GOOGLE_GEMINI_API_KEY,

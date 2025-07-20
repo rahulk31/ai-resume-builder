@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -20,9 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CloudLightning, LightbulbIcon, Loader2Icon, Zap } from "lucide-react";
-import { generateSummaryAI } from "../../../../../service/gemini";
-import { ResumeDataContext } from "@/context/resume-data";
+import { generateSummaryAI } from "../../../../service/gemini";
 import { toast } from "sonner";
+import { useResume } from "@/hooks/useResume";
 
 export const ModalAISummary = () => {
   const [aiPayloadData, setAiPayloadData] = useState({
@@ -32,7 +32,7 @@ export const ModalAISummary = () => {
   });
   const [loading, setLoading] = useState(false);
   const [outputSummary, setOutputSummary] = useState<string>("");
-  const { setResumeData } = React.useContext(ResumeDataContext);
+  const { actions } = useResume();
 
   interface AiPayload {
     role: string;
@@ -164,12 +164,7 @@ export const ModalAISummary = () => {
             <DialogClose asChild>
               <Button
                 onClick={() =>
-                  setResumeData((prev) => ({
-                    ...prev,
-                    personalInfo: {
-                      summary: outputSummary,
-                    },
-                  }))
+                  actions.updatePersonalInfo("summary", outputSummary)
                 }
               >
                 Use and Edit <LightbulbIcon />

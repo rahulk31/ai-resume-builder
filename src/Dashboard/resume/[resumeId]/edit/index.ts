@@ -1,0 +1,1 @@
+export { EditResume } from "./EditResume";

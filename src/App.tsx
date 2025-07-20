@@ -1,13 +1,21 @@
+import { Navigate, Outlet } from "react-router";
 import "./App.css";
-import { Button } from "./components/ui/button";
+import { useUser } from "@clerk/clerk-react";
+import { Header } from "./components/custom/Header";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
+  const { isSignedIn, isLoaded } = useUser();
+
+  if (!isSignedIn && isLoaded) {
+    return <Navigate to={"/auth/sign-in"} replace />;
+  }
+
   return (
     <>
-      AI Resume Builder
-      <div className="flex min-h-svh flex-col items-center justify-center">
-        <Button>Click me</Button>
-      </div>
+      <Header />
+      <Outlet />
+      <Toaster />
     </>
   );
 }

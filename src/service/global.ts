@@ -65,9 +65,21 @@ const getResumeById = async (resumeId: string | undefined) => {
   }
 };
 
+const deleteResumeById = async (resumeId: string | undefined) => {
+  console.error("Delete resume by ID is not implemented yet.");
+  try {
+    const response = await axiosClient.delete(`/resume-users/${resumeId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting resume:", error);
+    throw error;
+  }
+};
+
 export {
   createNewResumeService,
   getAllResumes,
   getResumeById,
   saveCurrentResume,
+  deleteResumeById,
 };

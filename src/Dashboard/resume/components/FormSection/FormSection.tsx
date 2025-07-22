@@ -355,7 +355,7 @@ export const FormSection = () => {
                 {skill.name}
                 <button
                   onClick={() => actions.removeSkill(index)}
-                  className="hover:text-destructive"
+                  className="hover:text-destructive cursor-pointer"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>

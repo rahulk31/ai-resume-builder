@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ModalAISummary } from "./ModalAISummary";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useResume } from "@/hooks/useResume";
 import { useState } from "react";
 
@@ -101,7 +101,7 @@ export const FormSection = () => {
         <CardHeader className="flex justify-between items-center">
           <CardTitle>Work Experience</CardTitle>
           <Button onClick={actions.addExperience}>
-            <PlusCircle /> Add Experience
+            <Plus /> Add Experience
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -239,7 +239,7 @@ export const FormSection = () => {
         <CardHeader className="flex justify-between items-center">
           <CardTitle>Education</CardTitle>
           <Button onClick={actions.addEducation}>
-            <PlusCircle /> Add Education
+            <Plus /> Add Education
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -342,8 +342,8 @@ export const FormSection = () => {
                 }
               }}
             />
-            <Button onClick={addSkill}>
-              <PlusCircle /> Add Skill
+            <Button onClick={addSkill} disabled={!currentSkill.trim()}>
+              <Plus /> Add Skill
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">
